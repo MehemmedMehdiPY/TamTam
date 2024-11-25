@@ -32,16 +32,19 @@ class SimpleClassifier(nn.Module):
 
         torch.manual_seed(42)
 
-        params = [(3, 32, 0, True), (32, 64, 0, True), (64, 128, 'same', True), (128, 256, 'same', True), (256, 256, 'same', False)]
+        params = [(3, 64, 0, False), (64, 64, 0, True), (64, 128, 0, False), (128, 128, 0, True), 
+                  (128, 256, 0, False), (256, 256, 'same', True), (256, 512, 'same', False)]
 
         blocks = []
         for in_channels, out_channels, padding, is_pool in params:
             block = Block(in_channels=in_channels, out_channels=out_channels, padding=padding, is_pool=is_pool)
             blocks.append(block)
         self.backbone = nn.ModuleDict({'block_{}'.format(i): block for i, block in enumerate(blocks)})
-        self.global_pool = nn.AvgPool2d(kernel_size=12)
+        self.global_pool = nn.AvgPool2d(kernel_size=24)
         self.flatten = nn.Flatten(start_dim=1)
-        self.linear_1 = nn.Linear(256, 53)
+        self.linear_1 = nn.Linear(512, 128)
+        self.linear_2 = nn.Linear(128, 53)
+        self.relu = nn.ReLU()
 
     def forward(self, x):
         x = self.backbone['block_0'](x)
@@ -49,8 +52,11 @@ class SimpleClassifier(nn.Module):
         x = self.backbone['block_2'](x)
         x = self.backbone['block_3'](x)
         x = self.backbone['block_4'](x)
+        x = self.backbone['block_5'](x)
+        x = self.backbone['block_6'](x)
         x = self.global_pool(x)
         x = self.flatten(x)
-        x = self.linear_1(x)
+        x = self.relu(self.linear_1(x))
+        x = self.linear_2(x)
         return x;
 
