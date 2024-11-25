@@ -1,15 +1,3 @@
-# import warnings
-# warnings.filterwarnings('ignore')
-
-# import os
-# import numpy as np
-# import matplotlib.pyplot as plt
-# import torch
-# from torch.utils.data import Dataset, DataLoader, random_split
-# from torch.nn import functional as f
-# import albumentations
-
-
 import os
 import numpy as np
 import torch
@@ -41,7 +29,7 @@ class ProcessingSupporter:
         image_max = 255
         image = (image - image_min) / (image_max - image_min + eps)
         return image
-
+    
 class CardImageDataset(Dataset, ProcessingSupporter):
     def __init__(self, root: str, mode:str = "train", transforms = None) -> None:
         super().__init__()
@@ -76,16 +64,13 @@ class CardImageDataset(Dataset, ProcessingSupporter):
     def __getitem__(self, idx):
         image = self.images[idx]
         label = self.labels[idx]
-        
         image = np.asarray(Image.open(image))
         image = image.astype(np.float32)
         image = image.transpose([2, 0, 1])
-        image = self.free_outliers(image=image)
+        image = self.free_outliers(image=image)    
+        image = torch.tensor(image).to(torch.float32)
         image = self.transforms(image)
         image = self.min_max_scaling(image)
-        
-        image = torch.tensor(image).to(torch.float32)
-        
         return image, label
 
     def __len__(self):

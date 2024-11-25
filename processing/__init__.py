@@ -1,1 +1,2 @@
 from .data_preparation import CardImageDataset
+from .augmentations import RandomResizedCrop
