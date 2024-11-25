@@ -32,32 +32,25 @@ class SimpleClassifier(nn.Module):
 
         torch.manual_seed(42)
 
-        params = [(3, 16, 0, True), (16, 32, 0, True), (32, 64, 'same', True), (64, 32, 'same', False)]
+        params = [(3, 32, 0, True), (32, 64, 0, True), (64, 128, 'same', True), (128, 256, 'same', True), (256, 256, 'same', False)]
 
         blocks = []
         for in_channels, out_channels, padding, is_pool in params:
             block = Block(in_channels=in_channels, out_channels=out_channels, padding=padding, is_pool=is_pool)
             blocks.append(block)
-            
         self.backbone = nn.ModuleDict({'block_{}'.format(i): block for i, block in enumerate(blocks)})
-        
+        self.global_pool = nn.AvgPool2d(kernel_size=12)
         self.flatten = nn.Flatten(start_dim=1)
-
-        self.linear_1 = nn.Linear(26 * 26 * 32, 1024)
-        self.batch_norm_1 = nn.BatchNorm1d(1024, affine=True)
-        self.linear_2 = nn.Linear(1024, 53)
-        self.relu = nn.ReLU()
+        self.linear_1 = nn.Linear(256, 53)
 
     def forward(self, x):
         x = self.backbone['block_0'](x)
         x = self.backbone['block_1'](x)
         x = self.backbone['block_2'](x)
         x = self.backbone['block_3'](x)
+        x = self.backbone['block_4'](x)
+        x = self.global_pool(x)
         x = self.flatten(x)
-
-        x = self.relu(self.linear_1(x))
-        x = self.batch_norm_1(x)
-        x = self.linear_2(x)
-
+        x = self.linear_1(x)
         return x;
 
