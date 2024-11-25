@@ -1,1 +1,1 @@
-from .model_framework import SimpleClassifier
+from .model_framework import SimpleClassifier, ExModel

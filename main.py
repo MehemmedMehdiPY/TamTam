@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
-from models import SimpleClassifier
+from models import SimpleClassifier, ExModel
 from train import Trainer
 
 DEVICE = 'cpu'
@@ -13,6 +13,7 @@ BATCH_SIZE = 16
 SEED = 42
 EPOCHS = 2
 NUM_CLASSES = 53
+LEARNING_RATE = 0.001
 
 transforms = Compose([
     RandomHorizontalFlip(p=0.5),
@@ -25,17 +26,18 @@ train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 val_dataset = CardImageDataset(root='../dataset', mode='valid')
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-model = SimpleClassifier()
+# model = SimpleClassifier().to(DEVICE)
+model = ExModel()
 
 for X, y in train_loader:
     out = model(X)
     break
 print(out.shape)
-print(out)
-optimizer = Adam(params=model.parameters(), lr=0.001)
+
+optimizer = Adam(params=model.parameters(), lr=LEARNING_RATE)
 loss_fn = CrossEntropyLoss()
 
-trainer = Trainer(model=model, train_loader=val_loader, val_loader=val_loader, optimizer=optimizer, 
+trainer = Trainer(model=model, train_loader=train_loader, val_loader=val_loader, optimizer=optimizer, 
         loss_fn=loss_fn, epochs=EPOCHS, filepath='./saved_models/trial_model.pt', num_classes=NUM_CLASSES, 
         device=DEVICE)
-# trainer.save_model()
+trainer.save_model()
