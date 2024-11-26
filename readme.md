@@ -50,7 +50,7 @@ model = ExModel().to(DEVICE)
 optimizer = Adam(params=model.parameters(), lr=LEARNING_RATE)
 loss_fn = CrossEntropyLoss()
 
-trainer = Trainer(model=model, train_loader=val_loader, val_loader=val_loader, optimizer=optimizer, 
+trainer = Trainer(model=model, train_loader=train_loader, val_loader=val_loader, optimizer=optimizer, 
         loss_fn=loss_fn, epochs=EPOCHS, filepath='./saved_models/trial_model.pt', num_classes=NUM_CLASSES, 
         device=DEVICE)
 trainer.run()
