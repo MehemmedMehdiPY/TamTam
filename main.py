@@ -29,7 +29,7 @@ val_dataset = CardImageDataset(root='../data', mode='valid')
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 # model = SimpleClassifier().to(DEVICE)
-model = ExModel()
+model = ExModel().to(DEVICE)
 
 optimizer = Adam(params=model.parameters(), lr=LEARNING_RATE)
 loss_fn = CrossEntropyLoss()
