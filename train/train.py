@@ -148,7 +148,7 @@ class Trainer:
                 print('The best model is saved at {:.3f}'.format(avg_f1))
                 with open('best_result/best_result.txt', 'w') as fo:
                     fo.write("f1: {}".format(avg_f1))
-                self.save_model(filepath=self.filepath)
+                self.save_model()
                 best_f1 = avg_f1
 
         writer.close()
