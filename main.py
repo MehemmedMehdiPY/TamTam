@@ -1,4 +1,5 @@
-import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
 from processing import CardImageDataset, RandomResizedCrop
 from torchvision.transforms.v2 import RandomHorizontalFlip, Compose
 import torch
@@ -11,28 +12,24 @@ from train import Trainer
 DEVICE = 'cpu'
 BATCH_SIZE = 16
 SEED = 42
-EPOCHS = 2
 NUM_CLASSES = 53
 LEARNING_RATE = 0.001
+EPOCHS = 20
 
+# You may use different transforms
 transforms = Compose([
     RandomHorizontalFlip(p=0.5),
     RandomResizedCrop(p=0.5, size=(224, 224), scale=(0.8, 1.0), ratio=(3/4, 4/3))
 ])
 
-train_dataset = CardImageDataset(root='../dataset', mode='train', transforms=transforms)
+train_dataset = CardImageDataset(root='../data', mode='train', transforms=transforms)
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-val_dataset = CardImageDataset(root='../dataset', mode='valid')
+val_dataset = CardImageDataset(root='../data', mode='valid')
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 # model = SimpleClassifier().to(DEVICE)
 model = ExModel()
-
-for X, y in train_loader:
-    out = model(X)
-    break
-print(out.shape)
 
 optimizer = Adam(params=model.parameters(), lr=LEARNING_RATE)
 loss_fn = CrossEntropyLoss()

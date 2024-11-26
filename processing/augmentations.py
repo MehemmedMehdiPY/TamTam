@@ -3,6 +3,9 @@ from torchvision.transforms import v2
 
 class RandomResizedCrop():
     def __init__(self, p, size, scale, ratio):
+        """The existing RandomResizedCrop didn't have p parameter. It is because scale parameter already simulates similar behaviors.
+        However, on its own, obtaining the original image without random cropping was challenging. Therefore,
+        I decided to add p parameter to reduce the frequency of transformation."""
         self.p = p
         self.size = size
         self.scale = scale
