@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import torchvision.models as model
 
 class DoNothing(nn.Module):
     def __init__(self):
@@ -28,6 +27,7 @@ class Block(nn.Module):
 
 class SimpleClassifier(nn.Module):
     def __init__(self):
+        """Warning! Model is underfitting."""
         super().__init__()
 
         torch.manual_seed(42)
@@ -58,17 +58,4 @@ class SimpleClassifier(nn.Module):
         x = self.flatten(x)
         x = self.relu(self.linear_1(x))
         x = self.linear_2(x)
-        return x;
-
-class ExModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-        self.resnet18 = model.resnet18(pretrained=True)
-        self.classifier = nn.Linear(1000, 53)
-
-    def forward(self, x):
-        with torch.no_grad():
-            x = self.resnet18(x)
-        x = self.classifier(x)
         return x;
